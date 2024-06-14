@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  java_app:
+    image: ubuntu:latest
+    container_name: java_21_ubuntu
+    volumes:
+      - ./src:/usr/src/app
+    working_dir: /usr/src/app
+    command: /bin/bash -c "while true; do sleep 30; done"
+    ports:
+      - "1122:1122"
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+networks:
+  default:
+    driver: bridge
