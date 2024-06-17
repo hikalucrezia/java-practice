@@ -1,7 +1,9 @@
+package big_or_small.practice_1;
+
 import java.util.Random;
 import java.util.Scanner;
 
-public class BigOrSmall_1 {
+public class Main {
     public static void main(String[] args) {
         Random random = new Random();
         Scanner scanner = new Scanner(System.in);
@@ -29,7 +31,7 @@ public class BigOrSmall_1 {
 
         boolean userInput = getUserInputYesOrNo(scanner);
 
-        int randomNumber2 = 2 + random.nextInt(7);
+        int randomNumber2 = 1 + random.nextInt(9);
         System.out.println(String.format("I chose %d this time", randomNumber2));
 
         if (randomNumber1 == randomNumber2) {
