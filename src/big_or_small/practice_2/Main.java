@@ -5,6 +5,7 @@ import java.util.Scanner;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.InputMismatchException;
 
 public class Main {
     public static void main(String[] args) {
@@ -24,7 +25,7 @@ class BigOrSmall {
     public BigOrSmall() {
         RandomNumberGenerator random = new RandomNumberGenerator();
 
-        currentNumber = random.generate();
+        currentNumber = random.generate(1, 9);
         remainingGames = 10;
         score = 0;
         winningStreak = 0;
@@ -36,12 +37,12 @@ class BigOrSmall {
             System.out.println(String.format("残りのゲーム回数: %d", remainingGames));
             System.out.println(String.format("現在のスコア: %d", score));
 
-            int result = game.play();
-            if (result == 1) {
+            GameResult result = game.play();
+            if (result == GameResult.WIN) {
                 winningStreak++;
                 score += 100 * winningStreak;
                 remainingGames--;
-            } else if (result == 0) {
+            } else if (result == GameResult.DEFEAT) {
                 winningStreak = 0;
                 remainingGames--;
             }
@@ -72,6 +73,12 @@ class BigOrSmall {
     }
 }
 
+enum GameResult {
+    DEFEAT,
+    WIN,
+    DRAW
+}
+
 class BigOrSmallGame {
     private Player player;
     private RandomNumberGenerator random;
@@ -82,11 +89,10 @@ class BigOrSmallGame {
         player = new Player();
         random = new RandomNumberGenerator();
         currentNumber = _currentNumber;
-        nextNumber = random.generate();
+        nextNumber = random.generate(1, 9);
     }
 
-    // 0: defeat, 1: win, 2: draw
-    public int play() {
+    public GameResult play() {
         System.out.println(String.format("次の数字は%dより大きいと思いますか？", currentNumber));
         System.out.println("入力してください。(高い: 0, 低い: 1)");
         int userInput = player.askNumber();
@@ -97,24 +103,24 @@ class BigOrSmallGame {
         if (currentNumber == nextNumber) {
             System.out.println("Draw");
             System.out.println("Draw!");
-            return 2;
+            return GameResult.DRAW;
         } else if (nextNumber < currentNumber) {
             System.out.println("Small");
 
             if (userInput == 1) {
                 System.out.println("当たり！");
-                return 1;
+                return GameResult.WIN;
             } else {
-                return 0;
+                return GameResult.DEFEAT;
             }
         } else {
             System.out.println("Big");
 
             if (userInput == 0) {
                 System.out.println("当たり！");
-                return 1;
+                return GameResult.WIN;
             } else {
-                return 0;
+                return GameResult.DEFEAT;
             }
         }
     }
@@ -127,8 +133,8 @@ class RandomNumberGenerator {
         random = new Random();
     }
 
-    public int generate() {
-        return 1 + random.nextInt(9);
+    public int generate(int min, int max) {
+        return min + random.nextInt(max);
     }
 }
 
@@ -140,11 +146,18 @@ class Player {
     }
 
     public int askNumber() {
-        int userInput = scanner.nextInt();
-        while (userInput != 0 && userInput != 1) {
-            System.out.println("有効な数字を入力してください");
-            userInput = scanner.nextInt();
+        while (true) {
+            try {
+                int userInput = scanner.nextInt();
+                if (userInput == 0 || userInput == 1) {
+                    return userInput;
+                } else {
+                    System.out.println("有効な数字を入力してください");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("有効な数字を入力してください");
+                scanner.next();
+            }
         }
-        return userInput;
     }
 }
